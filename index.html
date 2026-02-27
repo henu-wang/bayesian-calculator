@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Probability Calculator & Visualizer | KeepRule</title>
+    <meta name="description" content="Interactive Bayesian probability calculator with step-by-step breakdowns, visual probability bars, medical test and spam filter examples. Understand Bayes' theorem intuitively.">
+    <meta name="keywords" content="Bayesian probability, Bayes theorem, probability calculator, prior probability, posterior probability, likelihood, conditional probability, Bayesian thinking, medical test probability, spam filter, Naive Bayes">
+    <meta name="author" content="KeepRule">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://henu-wang.github.io/bayesian-calculator/">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Bayesian Probability Calculator & Visualizer">
+    <meta property="og:description" content="Interactive Bayesian calculator with visual probability bars, step-by-step math, and classic examples like medical tests and spam filters.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://henu-wang.github.io/bayesian-calculator/">
+    <meta property="og:site_name" content="KeepRule">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Bayesian Probability Calculator & Visualizer">
+    <meta name="twitter:description" content="Interactive Bayesian calculator with visual probability bars, step-by-step math, and classic examples.">
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Bayesian Probability Calculator",
+        "description": "Interactive Bayesian probability calculator with step-by-step breakdowns and visualizations",
+        "url": "https://henu-wang.github.io/bayesian-calculator/",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "author": {
+            "@type": "Organization",
+            "name": "KeepRule",
+            "url": "https://keeprule.com"
+        }
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .prob-bar { transition: width 0.5s ease-out; }
+        input[type=range] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; background: #dbeafe; outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #2563eb; cursor: pointer; }
+        input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #2563eb; cursor: pointer; border: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+<!-- Header -->
+<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div>
+            <h1 class="text-xl font-bold text-primary-700">Bayesian Calculator</h1>
+            <p class="text-xs text-gray-500">by <a href="https://keeprule.com" class="text-primary-600 hover:underline">KeepRule</a></p>
+        </div>
+        <nav class="hidden md:flex gap-6 text-sm">
+            <a href="#calculator" class="text-gray-600 hover:text-primary-600">Calculator</a>
+            <a href="#examples" class="text-gray-600 hover:text-primary-600">Examples</a>
+            <a href="#iterative" class="text-gray-600 hover:text-primary-600">Multi-Round</a>
+            <a href="#why" class="text-gray-600 hover:text-primary-600">Why It Matters</a>
+            <a href="https://keeprule.com/en/principles" class="text-primary-600 font-medium hover:underline">Principles</a>
+        </nav>
+        <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden border-t px-4 py-3 bg-white space-y-2 text-sm">
+        <a href="#calculator" class="block text-gray-600">Calculator</a>
+        <a href="#examples" class="block text-gray-600">Examples</a>
+        <a href="#iterative" class="block text-gray-600">Multi-Round</a>
+        <a href="#why" class="block text-gray-600">Why It Matters</a>
+        <a href="https://keeprule.com/en/principles" class="block text-primary-600 font-medium">Principles</a>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-16 md:py-24">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-3xl md:text-5xl font-bold mb-4">Bayes' Theorem Calculator</h2>
+        <p class="text-lg md:text-xl text-primary-100 max-w-2xl mx-auto mb-6">Understand conditional probability intuitively. Input your values, see the math step-by-step, and visualize how prior beliefs update with new evidence.</p>
+        <a href="#calculator" class="inline-block bg-white text-primary-700 font-semibold px-6 py-3 rounded-lg hover:bg-primary-50 transition">Start Calculating</a>
+    </div>
+</section>
+
+<!-- Formula Banner -->
+<section class="bg-white border-b py-8">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <p class="text-sm text-gray-500 uppercase tracking-wide mb-3">Bayes' Theorem</p>
+        <div class="text-xl md:text-2xl font-mono text-gray-700">
+            P(A|B) = <span class="text-primary-600">P(B|A)</span> &times; <span class="text-emerald-600">P(A)</span> / <span class="text-amber-600">P(B)</span>
+        </div>
+        <p class="text-sm text-gray-500 mt-3 max-w-xl mx-auto">Where P(B) = P(B|A)&times;P(A) + P(B|&not;A)&times;P(&not;A)</p>
+    </div>
+</section>
+
+<!-- Calculator -->
+<section id="calculator" class="py-16">
+    <div class="max-w-5xl mx-auto px-4">
+        <h3 class="text-2xl font-bold text-center mb-10">Interactive Calculator</h3>
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Inputs -->
+            <div class="bg-white rounded-xl shadow-sm border p-6 space-y-6">
+                <h4 class="font-semibold text-lg text-gray-700">Input Parameters</h4>
+
+                <div>
+                    <label class="flex justify-between text-sm font-medium text-gray-600 mb-1">
+                        <span>Prior Probability P(A)</span>
+                        <span id="priorVal" class="text-primary-600 font-mono">1.0%</span>
+                    </label>
+                    <input type="range" id="prior" min="0.1" max="99.9" step="0.1" value="1" class="w-full" oninput="calculate()">
+                    <p class="text-xs text-gray-400 mt-1">How likely is the event before seeing evidence?</p>
+                </div>
+
+                <div>
+                    <label class="flex justify-between text-sm font-medium text-gray-600 mb-1">
+                        <span>Sensitivity P(B|A) &mdash; True Positive Rate</span>
+                        <span id="likelihoodVal" class="text-primary-600 font-mono">90.0%</span>
+                    </label>
+                    <input type="range" id="likelihood" min="0.1" max="99.9" step="0.1" value="90" class="w-full" oninput="calculate()">
+                    <p class="text-xs text-gray-400 mt-1">If event is true, how likely is the evidence?</p>
+                </div>
+
+                <div>
+                    <label class="flex justify-between text-sm font-medium text-gray-600 mb-1">
+                        <span>False Positive Rate P(B|&not;A)</span>
+                        <span id="fpVal" class="text-primary-600 font-mono">5.0%</span>
+                    </label>
+                    <input type="range" id="falsePositive" min="0.1" max="99.9" step="0.1" value="5" class="w-full" oninput="calculate()">
+                    <p class="text-xs text-gray-400 mt-1">If event is false, how likely is the evidence anyway?</p>
+                </div>
+
+                <div class="pt-2 border-t">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-medium text-gray-600">Posterior Probability P(A|B)</span>
+                        <span id="posteriorVal" class="text-2xl font-bold text-primary-700 font-mono">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization -->
+            <div class="space-y-6">
+                <!-- Probability Bars -->
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                    <h4 class="font-semibold text-lg text-gray-700 mb-4">Probability Comparison</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1"><span class="text-emerald-700">Prior P(A)</span><span id="barPriorLabel" class="font-mono">1.0%</span></div>
+                            <div class="w-full bg-gray-100 rounded-full h-6 overflow-hidden"><div id="barPrior" class="bg-emerald-500 h-6 rounded-full prob-bar" style="width:1%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1"><span class="text-primary-700">Posterior P(A|B)</span><span id="barPosteriorLabel" class="font-mono">--</span></div>
+                            <div class="w-full bg-gray-100 rounded-full h-6 overflow-hidden"><div id="barPosterior" class="bg-primary-600 h-6 rounded-full prob-bar" style="width:0%"></div></div>
+                        </div>
+                    </div>
+                    <p id="updateFactor" class="text-sm text-gray-500 mt-3 text-center"></p>
+                </div>
+
+                <!-- SVG Visualization -->
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                    <h4 class="font-semibold text-lg text-gray-700 mb-3">Population Breakdown (per 10,000)</h4>
+                    <svg id="svgViz" viewBox="0 0 400 160" class="w-full" style="max-height:180px;">
+                        <rect x="0" y="10" width="400" height="30" rx="4" fill="#e5e7eb"/>
+                        <rect x="0" y="10" id="svgTruePos" width="0" height="30" rx="4" fill="#22c55e"/>
+                        <rect id="svgFalsePos" x="0" y="10" width="0" height="30" rx="4" fill="#f59e0b"/>
+                        <text x="200" y="60" text-anchor="middle" font-size="11" fill="#6b7280">All Positive Results</text>
+
+                        <rect x="0" y="80" id="svgTruePosBot" width="0" height="20" rx="3" fill="#22c55e"/>
+                        <text x="0" y="115" font-size="10" fill="#22c55e" id="svgTPLabel">True Positives: --</text>
+
+                        <rect x="0" y="125" id="svgFalsePosBot" width="0" height="20" rx="3" fill="#f59e0b"/>
+                        <text x="0" y="160" font-size="10" fill="#d97706" id="svgFPLabel">False Positives: --</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step-by-step Breakdown -->
+        <div id="steps" class="mt-8 bg-white rounded-xl shadow-sm border p-6 fade-in">
+            <h4 class="font-semibold text-lg text-gray-700 mb-4">Step-by-Step Calculation</h4>
+            <div id="stepsContent" class="space-y-3 text-sm font-mono text-gray-600"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Examples -->
+<section id="examples" class="py-16 bg-white">
+    <div class="max-w-5xl mx-auto px-4">
+        <h3 class="text-2xl font-bold text-center mb-3">Classic Examples</h3>
+        <p class="text-center text-gray-500 mb-10 max-w-2xl mx-auto">These well-known problems reveal how our intuition about probability often fails. Click to load the values into the calculator.</p>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Medical Test -->
+            <div class="border rounded-xl p-6 hover:shadow-md transition cursor-pointer" onclick="loadExample('medical')">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center text-xl">&#x1F3E5;</div>
+                    <h4 class="font-semibold text-lg">Medical Test Paradox</h4>
+                </div>
+                <p class="text-sm text-gray-600 mb-4">A disease affects 1% of the population. A test is 90% sensitive with a 5% false positive rate. If you test positive, what is the actual probability you have the disease?</p>
+                <div class="text-xs text-gray-400 space-y-1">
+                    <p>Prior: 1% &bull; Sensitivity: 90% &bull; False Positive: 5%</p>
+                    <p class="text-primary-600 font-semibold">Most people guess ~90%. The real answer surprises them.</p>
+                </div>
+                <button class="mt-4 text-sm text-primary-600 font-medium hover:underline">Load Example &rarr;</button>
+            </div>
+
+            <!-- Spam Filter -->
+            <div class="border rounded-xl p-6 hover:shadow-md transition cursor-pointer" onclick="loadExample('spam')">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center text-xl">&#x2709;</div>
+                    <h4 class="font-semibold text-lg">Spam Filter (Naive Bayes)</h4>
+                </div>
+                <p class="text-sm text-gray-600 mb-4">40% of incoming emails are spam. The word "FREE" appears in 80% of spam but only 10% of legitimate emails. If an email contains "FREE", is it spam?</p>
+                <div class="text-xs text-gray-400 space-y-1">
+                    <p>Prior: 40% &bull; P("FREE"|Spam): 80% &bull; P("FREE"|Not Spam): 10%</p>
+                    <p class="text-primary-600 font-semibold">This is how Naive Bayes classifiers actually work.</p>
+                </div>
+                <button class="mt-4 text-sm text-primary-600 font-medium hover:underline">Load Example &rarr;</button>
+            </div>
+
+            <!-- Rare Event -->
+            <div class="border rounded-xl p-6 hover:shadow-md transition cursor-pointer" onclick="loadExample('rare')">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-xl">&#x1F50D;</div>
+                    <h4 class="font-semibold text-lg">Rare Event Detection</h4>
+                </div>
+                <p class="text-sm text-gray-600 mb-4">Security screening: only 0.1% of passengers carry contraband. The scanner has 95% sensitivity and 2% false positive rate. A passenger triggers the alarm.</p>
+                <div class="text-xs text-gray-400 space-y-1">
+                    <p>Prior: 0.1% &bull; Sensitivity: 95% &bull; False Positive: 2%</p>
+                    <p class="text-primary-600 font-semibold">When base rates are very low, most alarms are false.</p>
+                </div>
+                <button class="mt-4 text-sm text-primary-600 font-medium hover:underline">Load Example &rarr;</button>
+            </div>
+
+            <!-- Hiring -->
+            <div class="border rounded-xl p-6 hover:shadow-md transition cursor-pointer" onclick="loadExample('hiring')">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-xl">&#x1F4BC;</div>
+                    <h4 class="font-semibold text-lg">Hiring Decision</h4>
+                </div>
+                <p class="text-sm text-gray-600 mb-4">10% of candidates are truly excellent. Your interview process correctly identifies 70% of excellent candidates, but also flags 15% of average candidates as excellent.</p>
+                <div class="text-xs text-gray-400 space-y-1">
+                    <p>Prior: 10% &bull; Sensitivity: 70% &bull; False Positive: 15%</p>
+                    <p class="text-primary-600 font-semibold">Interview signals are weaker than we think.</p>
+                </div>
+                <button class="mt-4 text-sm text-primary-600 font-medium hover:underline">Load Example &rarr;</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Iterative Bayesian Update -->
+<section id="iterative" class="py-16 bg-gray-50">
+    <div class="max-w-4xl mx-auto px-4">
+        <h3 class="text-2xl font-bold text-center mb-3">Multi-Round Bayesian Update</h3>
+        <p class="text-center text-gray-500 mb-8 max-w-2xl mx-auto">See how beliefs evolve as you observe multiple pieces of evidence. Each round's posterior becomes the next round's prior.</p>
+
+        <div class="bg-white rounded-xl shadow-sm border p-6">
+            <div class="grid sm:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="text-sm font-medium text-gray-600 block mb-1">Initial Prior P(A)</label>
+                    <input type="number" id="iterPrior" value="1" min="0.01" max="99.99" step="0.1" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-300 outline-none">
+                    <span class="text-xs text-gray-400">%</span>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-600 block mb-1">Sensitivity P(B|A)</label>
+                    <input type="number" id="iterSens" value="90" min="0.01" max="99.99" step="0.1" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-300 outline-none">
+                    <span class="text-xs text-gray-400">%</span>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-600 block mb-1">False Positive P(B|&not;A)</label>
+                    <input type="number" id="iterFP" value="5" min="0.01" max="99.99" step="0.1" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-300 outline-none">
+                    <span class="text-xs text-gray-400">%</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mb-6">
+                <button onclick="addEvidence(true)" class="flex-1 bg-emerald-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition">+ Positive Evidence</button>
+                <button onclick="addEvidence(false)" class="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition">+ Negative Evidence</button>
+                <button onclick="resetIterative()" class="px-4 bg-gray-200 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition">Reset</button>
+            </div>
+
+            <!-- Iterative History -->
+            <div id="iterHistory" class="space-y-2">
+                <div class="flex items-center gap-3 text-sm">
+                    <span class="w-20 text-gray-400">Start</span>
+                    <div class="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden"><div class="bg-primary-500 h-5 rounded-full prob-bar" style="width:1%"></div></div>
+                    <span class="w-16 text-right font-mono text-gray-700">1.00%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Humans Are Bad at Bayesian Thinking -->
+<section id="why" class="py-16 bg-white">
+    <div class="max-w-3xl mx-auto px-4">
+        <h3 class="text-2xl font-bold text-center mb-3">Why Humans Struggle with Bayesian Thinking</h3>
+        <p class="text-center text-gray-500 mb-10 max-w-xl mx-auto">Decades of research show systematic failures in how we process probabilistic information.</p>
+
+        <div class="space-y-8">
+            <div class="flex gap-4">
+                <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center font-bold shrink-0">1</div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-1">Base Rate Neglect</h4>
+                    <p class="text-sm text-gray-600">We ignore how rare or common something is in the population (the prior). When a medical test comes back positive, we focus on the test's accuracy and forget that the disease itself might be extremely rare, making most positives false.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center font-bold shrink-0">2</div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-1">Confirmation Bias</h4>
+                    <p class="text-sm text-gray-600">We update our beliefs asymmetrically: evidence that confirms our existing beliefs gets weighted heavily, while disconfirming evidence is discounted. Proper Bayesian thinking requires treating all evidence equally according to its diagnosticity.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center font-bold shrink-0">3</div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-1">Probability vs. Frequency</h4>
+                    <p class="text-sm text-gray-600">Research by Gerd Gigerenzer shows humans understand frequencies far better than probabilities. "9 out of 10,000" is more intuitive than "0.09%". The natural frequency format closely mirrors how information was encountered during our evolutionary history.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center font-bold shrink-0">4</div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-1">Single-Event Thinking</h4>
+                    <p class="text-sm text-gray-600">We tend to treat each piece of evidence in isolation rather than accumulating it. Bayesian reasoning requires chaining updates: each observation shifts our belief, and the cumulative effect of multiple weak signals can produce strong conclusions. This is the core insight behind the multi-round calculator above.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center font-bold shrink-0">5</div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-1">Overconfidence After Evidence</h4>
+                    <p class="text-sm text-gray-600">Even when we do update correctly, we often become overconfident in the posterior. A posterior of 15% (up from 1%) represents a significant update, but it still means an 85% chance the hypothesis is wrong. Calibrated uncertainty is a hallmark of expert judgment.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-10 bg-primary-50 border border-primary-200 rounded-xl p-6 text-center">
+            <p class="text-sm text-primary-800 mb-3">Better decision-making starts with better mental models. Explore frameworks used by Warren Buffett, Charlie Munger, and other great thinkers.</p>
+            <div class="flex flex-wrap justify-center gap-3">
+                <a href="https://keeprule.com/en/principles" class="text-sm bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition">Investment Principles</a>
+                <a href="https://keeprule.com/en/scenarios" class="text-sm bg-white text-primary-600 border border-primary-300 px-4 py-2 rounded-lg hover:bg-primary-50 transition">Decision Scenarios</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-gray-400 py-12">
+    <div class="max-w-5xl mx-auto px-4">
+        <div class="grid sm:grid-cols-3 gap-8 mb-8">
+            <div>
+                <h5 class="text-white font-semibold mb-3">Bayesian Calculator</h5>
+                <p class="text-sm">An interactive tool to help you understand conditional probability and Bayes' theorem through visualization and step-by-step math.</p>
+            </div>
+            <div>
+                <h5 class="text-white font-semibold mb-3">KeepRule Resources</h5>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="https://keeprule.com/en/principles" class="hover:text-white transition">Investment Principles</a></li>
+                    <li><a href="https://keeprule.com/en/scenarios" class="hover:text-white transition">Decision Scenarios</a></li>
+                    <li><a href="https://keeprule.com/en/masters" class="hover:text-white transition">Masters of Investing</a></li>
+                    <li><a href="https://keeprule.com/en/blog" class="hover:text-white transition">Blog & Insights</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-white font-semibold mb-3">About</h5>
+                <p class="text-sm">Built by <a href="https://keeprule.com" class="text-primary-400 hover:text-white transition">KeepRule</a> to promote better probabilistic thinking in investing and daily life.</p>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 pt-6 text-center text-xs">
+            <p>&copy; 2025 <a href="https://keeprule.com" class="text-primary-400 hover:text-white">KeepRule</a>. Open-source educational tool. <a href="https://github.com/henu-wang/bayesian-calculator" class="text-primary-400 hover:text-white">GitHub</a></p>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ---- Calculator ----
+function calculate() {
+    const prior = parseFloat(document.getElementById('prior').value) / 100;
+    const likelihood = parseFloat(document.getElementById('likelihood').value) / 100;
+    const fp = parseFloat(document.getElementById('falsePositive').value) / 100;
+
+    document.getElementById('priorVal').textContent = (prior * 100).toFixed(1) + '%';
+    document.getElementById('likelihoodVal').textContent = (likelihood * 100).toFixed(1) + '%';
+    document.getElementById('fpVal').textContent = (fp * 100).toFixed(1) + '%';
+
+    const pB = likelihood * prior + fp * (1 - prior);
+    const posterior = (likelihood * prior) / pB;
+
+    document.getElementById('posteriorVal').textContent = (posterior * 100).toFixed(2) + '%';
+
+    // Bars
+    document.getElementById('barPrior').style.width = (prior * 100) + '%';
+    document.getElementById('barPriorLabel').textContent = (prior * 100).toFixed(1) + '%';
+    document.getElementById('barPosterior').style.width = (posterior * 100) + '%';
+    document.getElementById('barPosteriorLabel').textContent = (posterior * 100).toFixed(2) + '%';
+
+    const factor = (posterior / prior).toFixed(1);
+    document.getElementById('updateFactor').textContent = `Evidence made it ${factor}x more likely (update factor)`;
+
+    // SVG
+    const pop = 10000;
+    const truePos = Math.round(pop * prior * likelihood);
+    const falsePos = Math.round(pop * (1 - prior) * fp);
+    const totalPos = truePos + falsePos;
+    const barWidth = 400;
+    const tpW = totalPos > 0 ? (truePos / totalPos) * barWidth : 0;
+    const fpW = totalPos > 0 ? (falsePos / totalPos) * barWidth : 0;
+
+    document.getElementById('svgTruePos').setAttribute('width', tpW);
+    document.getElementById('svgFalsePos').setAttribute('x', tpW);
+    document.getElementById('svgFalsePos').setAttribute('width', fpW);
+
+    document.getElementById('svgTruePosBot').setAttribute('width', Math.min(tpW * 2, barWidth));
+    document.getElementById('svgFalsePosBot').setAttribute('width', Math.min(fpW * 2, barWidth));
+    document.getElementById('svgTPLabel').textContent = `True Positives: ${truePos} out of ${pop}`;
+    document.getElementById('svgFPLabel').textContent = `False Positives: ${falsePos} out of ${pop}`;
+
+    // Steps
+    const stepsHTML = `
+        <div class="bg-gray-50 rounded-lg p-3"><strong>Step 1:</strong> P(B) = P(B|A)&times;P(A) + P(B|&not;A)&times;P(&not;A)<br>
+        P(B) = ${likelihood.toFixed(4)} &times; ${prior.toFixed(4)} + ${fp.toFixed(4)} &times; ${(1 - prior).toFixed(4)} = <strong>${pB.toFixed(6)}</strong></div>
+        <div class="bg-gray-50 rounded-lg p-3"><strong>Step 2:</strong> P(A|B) = P(B|A) &times; P(A) / P(B)<br>
+        P(A|B) = ${likelihood.toFixed(4)} &times; ${prior.toFixed(4)} / ${pB.toFixed(6)} = <strong>${(posterior * 100).toFixed(2)}%</strong></div>
+        <div class="bg-gray-50 rounded-lg p-3"><strong>Interpretation:</strong> Out of every ${pop.toLocaleString()} people, about <strong>${truePos}</strong> truly have the condition and test positive, while <strong>${falsePos}</strong> don't have it but test positive anyway. So among all ${totalPos} positive results, only <strong>${(posterior * 100).toFixed(1)}%</strong> actually have the condition.</div>
+    `;
+    document.getElementById('stepsContent').innerHTML = stepsHTML;
+}
+
+// ---- Examples ----
+function loadExample(type) {
+    const examples = {
+        medical: { prior: 1, likelihood: 90, fp: 5 },
+        spam: { prior: 40, likelihood: 80, fp: 10 },
+        rare: { prior: 0.1, likelihood: 95, fp: 2 },
+        hiring: { prior: 10, likelihood: 70, fp: 15 }
+    };
+    const ex = examples[type];
+    document.getElementById('prior').value = ex.prior;
+    document.getElementById('likelihood').value = ex.likelihood;
+    document.getElementById('falsePositive').value = ex.fp;
+    calculate();
+    document.getElementById('calculator').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ---- Iterative Bayesian Update ----
+let iterRounds = [];
+
+function addEvidence(positive) {
+    const sens = parseFloat(document.getElementById('iterSens').value) / 100;
+    const fpRate = parseFloat(document.getElementById('iterFP').value) / 100;
+
+    let currentPrior;
+    if (iterRounds.length === 0) {
+        currentPrior = parseFloat(document.getElementById('iterPrior').value) / 100;
+    } else {
+        currentPrior = iterRounds[iterRounds.length - 1].posterior;
+    }
+
+    let posterior;
+    if (positive) {
+        const pB = sens * currentPrior + fpRate * (1 - currentPrior);
+        posterior = (sens * currentPrior) / pB;
+    } else {
+        // Negative evidence: P(A|not B) = P(not B|A)*P(A) / P(not B)
+        const pNotBA = 1 - sens; // miss rate
+        const pNotBNotA = 1 - fpRate; // true negative rate
+        const pNotB = pNotBA * currentPrior + pNotBNotA * (1 - currentPrior);
+        posterior = (pNotBA * currentPrior) / pNotB;
+    }
+
+    iterRounds.push({ prior: currentPrior, posterior, positive });
+    renderIterHistory();
+}
+
+function resetIterative() {
+    iterRounds = [];
+    renderIterHistory();
+}
+
+function renderIterHistory() {
+    const container = document.getElementById('iterHistory');
+    const initPrior = iterRounds.length > 0 ? iterRounds[0].prior : parseFloat(document.getElementById('iterPrior').value) / 100;
+
+    let html = `<div class="flex items-center gap-3 text-sm">
+        <span class="w-20 text-gray-400">Start</span>
+        <div class="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden"><div class="bg-primary-500 h-5 rounded-full prob-bar" style="width:${Math.max(initPrior * 100, 0.5)}%"></div></div>
+        <span class="w-16 text-right font-mono text-gray-700">${(initPrior * 100).toFixed(2)}%</span>
+    </div>`;
+
+    iterRounds.forEach((r, i) => {
+        const color = r.positive ? 'emerald' : 'red';
+        const label = r.positive ? '+' : '-';
+        html += `<div class="flex items-center gap-3 text-sm fade-in">
+            <span class="w-20 text-gray-400">Round ${i + 1} <span class="text-${color}-500 font-bold">${label}</span></span>
+            <div class="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden"><div class="bg-${color}-500 h-5 rounded-full prob-bar" style="width:${Math.max(r.posterior * 100, 0.5)}%"></div></div>
+            <span class="w-16 text-right font-mono text-gray-700">${(r.posterior * 100).toFixed(2)}%</span>
+        </div>`;
+    });
+
+    container.innerHTML = html;
+}
+
+// Init
+calculate();
+</script>
+
+</body>
+</html>
